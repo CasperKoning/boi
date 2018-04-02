@@ -1,12 +1,11 @@
 #!/usr/bin/python
 
-from urllib2 import urlopen
+from urllib.request import urlopen
 from lxml import html
 import requests
 import shutil
 import json
 import progressbar
-
 
 def extract_item_info(item, item_types=[]):
     item_id = (item.xpath('./@data-sid'))[0]
@@ -25,15 +24,15 @@ def extract_item_info(item, item_types=[]):
 
     item_pools = (item.xpath('.//p[starts-with(text(), "Item Pool")]/text()') or [""])[0].replace("Item Pool:", "")
     item_pools = [item_pool.strip() for item_pool in item_pools.split(",")]
-    item_pools = filter(lambda item_pool: not (item_pool == ""), item_pools)
+    item_pools = [item_pool for item_pool in item_pools if not item_pool == ""]
 
     item_types = (item_types or item.xpath('.//p[starts-with(text(), "Type")]/text()') or [""])[0].replace("Type:", "")
     item_types = [item_type.strip() for item_type in item_types.split(",")]
-    item_types = filter(lambda item_type: not (item_type == ""), item_types)
+    item_types = [item_type for item_type in item_types if not item_type == ""]
 
     search_tags = (item.xpath('.//p[@class="tags"]/text()') or [""])[0]
     search_tags = [tag.strip() for tag in search_tags.split(",")]
-    search_tags = filter(lambda tag: not (tag == "" or "*" in tag), search_tags)
+    search_tags = [tag for tag in search_tags if not (tag == "" or "*" in tag)]
 
     info = {
         "item_id": item_id,

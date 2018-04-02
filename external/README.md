@@ -17,6 +17,8 @@ Based on the item ID, the icon is extracted and saved as `${item_id}.png`.
 ## Extracting data
 A python script (`extract.py`) is provided that can be used to extract the necessary sources in case you need to rerun the extraction (for example when an external website is updated):
 ```bash
-pip install -r requirements.txt
-python extract.py
+pip3 install -r requirements.txt
+python3 extract.py
 ```
+
+(Note: only supports python3)

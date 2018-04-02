@@ -41,7 +41,7 @@ def extract_item_info(item, item_types=[]):
     }
     return info
 
-content = html.parse('platinumgod.co.uk/index.html')
+content = html.parse('http://platinumgod.co.uk')
 
 item_containers = content.xpath('//div[contains(@class, "items-container")]')
 trinket_containers = content.xpath('//div[contains(@class, "trinkets-container")]')

@@ -45,7 +45,6 @@ content = html.parse('platinumgod.co.uk/index.html')
 
 item_containers = content.xpath('//div[contains(@class, "items-container")]')
 trinket_containers = content.xpath('//div[contains(@class, "trinkets-container")]')
-usable_containers = content.xpath('//div[contains(@class, "tarot-container")]')
 
 infos = []
 for item_container in item_containers:
@@ -58,12 +57,6 @@ for trinket_container in trinket_containers:
     items = trinket_container.xpath('.//li[contains(@class, "textbox")]')
     for item in items:
         info = extract_item_info(item, item_types=["Trinket"])
-        infos.append(info)
-
-for usable_container in usable_containers:
-    items = usable_container.xpath('.//li[contains(@class, "textbox")]')
-    for item in items:
-        info = extract_item_info(item, item_types=["Usable"])
         infos.append(info)
 
 with open("../data/items.json", "w") as f:

@@ -5,6 +5,8 @@ import json
 
 
 def extract_item_info(item, item_types=[]):
+    item_id = (item.xpath('./@data-sid'))[0]
+
     title = (item.xpath('.//p[@class="item-title"]/text()') or [""])[0]
 
     subtitle = (item.xpath('.//p[@class="pickup"]/text()') or [""])[0].replace("\"", "")
@@ -29,6 +31,7 @@ def extract_item_info(item, item_types=[]):
     search_tags = filter(lambda tag: not (tag == "" or "*" in tag), search_tags)
 
     info = {
+        "item_id": item_id,
         "title": title,
         "subtitle": subtitle,
         "description_parts": description_parts,

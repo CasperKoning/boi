@@ -1,7 +1,11 @@
 #!/usr/bin/python
 
+from urllib2 import urlopen
 from lxml import html
+import requests
+import shutil
 import json
+import progressbar
 
 
 def extract_item_info(item, item_types=[]):
@@ -42,26 +46,58 @@ def extract_item_info(item, item_types=[]):
     }
     return info
 
-content = html.parse('http://platinumgod.co.uk')
+platinumgod_content = html.parse('http://platinumgod.co.uk')
 
-item_containers = content.xpath('//div[contains(@class, "items-container")]')
+print("Extracting image information")
+item_containers = platinumgod_content.xpath('//div[contains(@class, "items-container")]')
 item_infos = []
 for item_container in item_containers:
     items = item_container.xpath('.//li[contains(@class, "textbox")]')
-    for item in items:
+    bar = progressbar.ProgressBar()
+    for item in bar(items):
         item_info = extract_item_info(item)
         item_infos.append(item_info)
-
-trinket_containers = content.xpath('//div[contains(@class, "trinkets-container")]')
-trinket_infos = []
-for trinket_container in trinket_containers:
-    trinkets = trinket_container.xpath('.//li[contains(@class, "textbox")]')
-    for trinket in trinkets:
-        trinket_info = extract_item_info(trinket, item_types=["Trinket"])
-        trinket_infos.append(trinket_info)
 
 with open("../data/items.json", "w") as f:
     json.dump(item_infos, f)
 
+print("Extracting trinket information")
+trinket_containers = platinumgod_content.xpath('//div[contains(@class, "trinkets-container")]')
+trinket_infos = []
+for trinket_container in trinket_containers:
+    trinkets = trinket_container.xpath('.//li[contains(@class, "textbox")]')
+    bar = progressbar.ProgressBar()
+    for trinket in bar(trinkets):
+        trinket_info = extract_item_info(trinket, item_types=["Trinket"])
+        trinket_infos.append(trinket_info)
+
 with open("../data/trinkets.json", "w") as f:
     json.dump(trinket_infos, f)
+
+print("Extracting images for items")
+boi_wiki_items_content = html.parse(urlopen('https://bindingofisaacrebirth.gamepedia.com/Item'))  # urlopen needed because op https...
+item_categories = boi_wiki_items_content.xpath('//table[contains(@class, "table-item")]')
+for item_category in item_categories:
+    items = item_category.xpath('./tr[position()>1]')
+    bar = progressbar.ProgressBar()
+    for item in bar(items):
+        item_id = (item.xpath('./td[2]/text()') or [""])[0].strip()
+        image_url = (item.xpath('./td[3]')[0].xpath('./a/img/@src') or item.xpath('./td[3]')[0].xpath('./div/a/img/@src') or [""])[0].strip()
+        response = requests.get(image_url, stream=True)
+        with open('../data/images/items/{}.png'.format(item_id), 'wb') as out_file:
+            shutil.copyfileobj(response.raw, out_file)
+        del response
+
+print("Extracting images for trinkets")
+boi_wiki_trinkets_content = html.parse(urlopen('https://bindingofisaacrebirth.gamepedia.com/Trinkets'))  # urlopen needed because op https...
+trinket_categories = boi_wiki_trinkets_content.xpath('//table[contains(@class, "trinkets")]')
+for trinket_category in trinket_categories:
+    trinkets = trinket_category.xpath('./tr[position()>1]')
+    bar = progressbar.ProgressBar()
+    for trinket in bar(trinkets):
+        trinket_id = (trinket.xpath('./td[2]/text()') or [""])[0].strip()
+        image_url = (trinket.xpath('./td[3]')[0].xpath('./a/img/@src') or trinket.xpath('./td[3]')[0].xpath('./div/a/img/@src') or [""])[0].strip()
+        response = requests.get(image_url, stream=True)
+        with open('../data/images/trinkets/{}.png'.format(trinket_id), 'wb') as out_file:
+            shutil.copyfileobj(response.raw, out_file)
+        del response

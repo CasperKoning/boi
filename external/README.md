@@ -1,6 +1,7 @@
 ## External sources
-In this directory, you'll find sources from external websites that we reuse in this project. All the sources for a website is contained within a folder named after the external website. All credits for these sources go to their respective websites. 
+In this directory, you'll find scripts for extracting game data from external websites that we reuse in this project. All credits for these sources go to their respective websites. 
 
+We extract the following:
 ### platinumgod.co.uk
 Extracts the following information from platinumgod.co.uk:
 - Item ID

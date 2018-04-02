@@ -45,20 +45,23 @@ def extract_item_info(item, item_types=[]):
 content = html.parse('http://platinumgod.co.uk')
 
 item_containers = content.xpath('//div[contains(@class, "items-container")]')
-trinket_containers = content.xpath('//div[contains(@class, "trinkets-container")]')
-
-infos = []
+item_infos = []
 for item_container in item_containers:
     items = item_container.xpath('.//li[contains(@class, "textbox")]')
     for item in items:
-        info = extract_item_info(item)
-        infos.append(info)
+        item_info = extract_item_info(item)
+        item_infos.append(item_info)
 
+trinket_containers = content.xpath('//div[contains(@class, "trinkets-container")]')
+trinket_infos = []
 for trinket_container in trinket_containers:
-    items = trinket_container.xpath('.//li[contains(@class, "textbox")]')
-    for item in items:
-        info = extract_item_info(item, item_types=["Trinket"])
-        infos.append(info)
+    trinkets = trinket_container.xpath('.//li[contains(@class, "textbox")]')
+    for trinket in trinkets:
+        trinket_info = extract_item_info(trinket, item_types=["Trinket"])
+        trinket_infos.append(trinket_info)
 
 with open("../data/items.json", "w") as f:
-    json.dump(infos, f)
+    json.dump(item_infos, f)
+
+with open("../data/trinkets.json", "w") as f:
+    json.dump(trinket_infos, f)

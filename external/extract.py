@@ -57,7 +57,7 @@ for item_container in item_containers:
         item_info = extract_item_info(item)
         item_infos.append(item_info)
 
-with open("../data/items.json", "w") as f:
+with open("../boi/data/items.json", "w") as f:
     json.dump(item_infos, f)
 
 print("Extracting trinket information")
@@ -70,7 +70,7 @@ for trinket_container in trinket_containers:
         trinket_info = extract_item_info(trinket, item_types=["Trinket"])
         trinket_infos.append(trinket_info)
 
-with open("../data/trinkets.json", "w") as f:
+with open("../boi/data/trinkets.json", "w") as f:
     json.dump(trinket_infos, f)
 
 print("Extracting images for items")
@@ -83,7 +83,7 @@ for item_category in item_categories:
         item_id = (item.xpath('./td[2]/text()') or [""])[0].strip()
         image_url = (item.xpath('./td[3]')[0].xpath('./a/img/@src') or item.xpath('./td[3]')[0].xpath('./div/a/img/@src') or [""])[0].strip()
         response = requests.get(image_url, stream=True)
-        with open('../data/images/items/{}.png'.format(item_id), 'wb') as out_file:
+        with open('../boi/data/images/items/{}.png'.format(item_id), 'wb') as out_file:
             shutil.copyfileobj(response.raw, out_file)
         del response
 
@@ -97,6 +97,6 @@ for trinket_category in trinket_categories:
         trinket_id = (trinket.xpath('./td[2]/text()') or [""])[0].strip()
         image_url = (trinket.xpath('./td[3]')[0].xpath('./a/img/@src') or trinket.xpath('./td[3]')[0].xpath('./div/a/img/@src') or [""])[0].strip()
         response = requests.get(image_url, stream=True)
-        with open('../data/images/trinkets/{}.png'.format(trinket_id), 'wb') as out_file:
+        with open('../boi/data/images/trinkets/{}.png'.format(trinket_id), 'wb') as out_file:
             shutil.copyfileobj(response.raw, out_file)
         del response

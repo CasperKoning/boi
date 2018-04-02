@@ -16,7 +16,8 @@ def extract_item_info(item, item_types=[]):
     for line in description_lines:
         splits = line.split("\n")
         rejoined = " ".join([split.replace(u"\u2022", "").strip() for split in splits])
-        description_parts.append(rejoined) 
+        description_parts.append(rejoined)
+    description_parts = [part.strip() for part in description_parts if part.strip()]
 
     item_pools = (item.xpath('.//p[starts-with(text(), "Item Pool")]/text()') or [""])[0].replace("Item Pool:", "")
     item_pools = [item_pool.strip() for item_pool in item_pools.split(",")]

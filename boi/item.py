@@ -1,8 +1,8 @@
 import click
 import json
 from pkg_resources import resource_string
-import pydoc
-
+from .formatters import formatter_names
+from .formatters import formatters
 
 @click.group()
 def item():
@@ -12,30 +12,35 @@ def item():
     pass
 
 @item.command()
-def all():
+@click.option("-f", "--format", metavar="FORMAT", default="simple", type=click.Choice(formatter_names), help="Output format (can be %s)." % ", ".join(formatter_names))
+def all(format):
     """
     Lists all items
     """
     items = json.loads(resource_string(__name__, 'data/items.json'))
-    pydoc.pager(json.dumps(items, indent=2))
+    formatters[format](items)
 
 @item.command()
 @click.argument("id")
-def id(id):
+@click.option("-f", "--format", metavar="FORMAT", default="simple", type=click.Choice(formatter_names), help="Output format (can be %s)." % ", ".join(formatter_names))
+def id(id, format):
     """
     Find an item by its ID and display its information
     """
     items = json.loads(resource_string(__name__, 'data/items.json'))
+    results = []
     for item in items:
         if item['item_id'] == id:
-            pydoc.pager(json.dumps(item, indent=2))
+            results.append(item)
             break
     else:
         print("Could not find an item with id {}".format(id))
+    formatters[format](results)
 
 @item.command()
 @click.argument("search_term")
-def search(search_term):
+@click.option("-f", "--format", metavar="FORMAT", default="simple", type=click.Choice(formatter_names), help="Output format (can be %s)." % ", ".join(formatter_names))
+def search(search_term, format):
     """
     Find an item via a search term (name, subtitle, some property)
     """
@@ -56,6 +61,6 @@ def search(search_term):
         if has_search_term(item, st):
             results.append(item)
     if results:
-        pydoc.pager(json.dumps(results, indent=2))
+        formatters[format](results)
     else:
         print("Could not find an item for the search term {}".format(search_term))

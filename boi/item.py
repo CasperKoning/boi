@@ -1,6 +1,7 @@
 import click
 import json
 from pkg_resources import resource_string
+import pydoc
 
 
 @click.group()
@@ -16,7 +17,7 @@ def all():
     Lists all items
     """
     items = json.loads(resource_string(__name__, 'data/items.json'))
-    print(json.dumps(items, indent=2))
+    pydoc.pager(json.dumps(items, indent=2))
 
 @item.command()
 @click.argument("id")
@@ -27,7 +28,7 @@ def id(id):
     items = json.loads(resource_string(__name__, 'data/items.json'))
     for item in items:
         if item['item_id'] == id:
-            print(json.dumps(item, indent=2))
+            pydoc.pager(json.dumps(item, indent=2))
             break
     else:
         print("Could not find an item with id {}".format(id))
@@ -55,6 +56,6 @@ def search(search_term):
         if has_search_term(item, st):
             results.append(item)
     if results:
-        print(json.dumps(results, indent=2))
+        pydoc.pager(json.dumps(results, indent=2))
     else:
         print("Could not find an item for the search term {}".format(search_term))

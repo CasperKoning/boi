@@ -38,7 +38,7 @@ The supported formats are:
 Some examples of commands you can run:
 
 ### Listing all items/trinkets
-[![asciicast](https://asciinema.org/a/5nqAVhajSfgbuHks8FP7ycK3K.png)](https://asciinema.org/a/5nqAVhajSfgbuHks8FP7ycK3K)
+![](readme-assets/simple.gif)
 
 For listing all items:
 ```bash
@@ -51,7 +51,7 @@ boi trinket all
 ```
 
 ### Searching by name or subtitle
-[![asciicast](https://asciinema.org/a/U0UvTwApV4s4Tjur06lUAjAI4.png)](https://asciinema.org/a/U0UvTwApV4s4Tjur06lUAjAI4)
+![](readme-assets/brimstone.gif)
 You can search by name of the item
 ```bash
 boi item search "Brimstone"
@@ -62,7 +62,7 @@ boi item search "not butter bean"
 ```
 
 ### Searching by item aspects
-[![asciicast](https://asciinema.org/a/c3bN9RNB1Go2VZgaDO261Die5.png)](https://asciinema.org/a/c3bN9RNB1Go2VZgaDO261Die5)
+![](readme-assets/knife.gif)
 
 Searching by certain aspects of the items are also possible (possible search terms have been shamelessly copied from [platinumgod](http://platinumgod.co.uk)), like color:
 ```bash

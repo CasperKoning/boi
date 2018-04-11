@@ -49,29 +49,23 @@ platinumgod_content = html.parse('http://platinumgod.co.uk')
 
 print("Extracting image information")
 item_containers = platinumgod_content.xpath('//div[contains(@class, "items-container")]')
-item_infos = []
+item_infos = {}
 for item_container in item_containers:
     items = item_container.xpath('.//li[contains(@class, "textbox")]')
     bar = progressbar.ProgressBar()
     for item in bar(items):
         item_info = extract_item_info(item)
-        item_infos.append(item_info)
-
-with open("../boi/data/items.json", "w") as f:
-    json.dump(item_infos, f)
+        item_infos[item_info["item_id"]] = item_info
 
 print("Extracting trinket information")
 trinket_containers = platinumgod_content.xpath('//div[contains(@class, "trinkets-container")]')
-trinket_infos = []
+trinket_infos = {}
 for trinket_container in trinket_containers:
     trinkets = trinket_container.xpath('.//li[contains(@class, "textbox")]')
     bar = progressbar.ProgressBar()
     for trinket in bar(trinkets):
         trinket_info = extract_item_info(trinket, item_types=["Trinket"])
-        trinket_infos.append(trinket_info)
-
-with open("../boi/data/trinkets.json", "w") as f:
-    json.dump(trinket_infos, f)
+        trinket_infos[trinket_info["item_id"]] = trinket_info
 
 print("Extracting images for items")
 boi_wiki_items_content = html.parse(urlopen('https://bindingofisaacrebirth.gamepedia.com/Item'))  # urlopen needed because op https...
@@ -83,8 +77,10 @@ for item_category in item_categories:
         item_id = (item.xpath('./td[2]/text()') or [""])[0].strip()
         image_url = (item.xpath('./td[3]')[0].xpath('./a/img/@src') or item.xpath('./td[3]')[0].xpath('./div/a/img/@src') or [""])[0].strip()
         response = requests.get(image_url, stream=True)
-        with open('../boi/data/images/items/{}.png'.format(item_id), 'wb') as out_file:
+        image_path = "items/{}.png".format(item_id)
+        with open('../boi/data/images/{}'.format(image_path), 'wb') as out_file:
             shutil.copyfileobj(response.raw, out_file)
+            item_infos[item_id]["image_path"] = image_path
         del response
 
 print("Extracting images for trinkets")
@@ -97,6 +93,14 @@ for trinket_category in trinket_categories:
         trinket_id = (trinket.xpath('./td[2]/text()') or [""])[0].strip()
         image_url = (trinket.xpath('./td[3]')[0].xpath('./a/img/@src') or trinket.xpath('./td[3]')[0].xpath('./div/a/img/@src') or [""])[0].strip()
         response = requests.get(image_url, stream=True)
-        with open('../boi/data/images/trinkets/{}.png'.format(trinket_id), 'wb') as out_file:
+        image_path = "trinkets/{}.png".format(trinket_id)
+        with open('../boi/data/images/{}'.format(image_path), 'wb') as out_file:
             shutil.copyfileobj(response.raw, out_file)
+            trinket_infos[trinket_id]["image_path"] = image_path
         del response
+
+with open("../boi/data/items.json", "w") as f:
+    json.dump(item_infos, f)
+
+with open("../boi/data/trinkets.json", "w") as f:
+    json.dump(trinket_infos, f)

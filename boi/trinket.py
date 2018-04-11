@@ -3,6 +3,7 @@ import json
 from pkg_resources import resource_string
 from .formatters import formatter_names
 from .formatters import formatters
+from .item_selector import select_item
 
 @click.group()
 def trinket():
@@ -17,7 +18,7 @@ def all(format):
     """
     Lists all trinkets
     """
-    trinkets = json.loads(resource_string(__name__, 'data/trinkets.json'))
+    trinkets = json.loads(resource_string(__name__, 'data/trinkets.json')).values()
     formatters[format](trinkets)
 
 @trinket.command()
@@ -27,7 +28,7 @@ def id(id, format):
     """
     Find a trinket by its ID and display its information
     """
-    trinkets = json.loads(resource_string(__name__, 'data/trinkets.json'))
+    trinkets = json.loads(resource_string(__name__, 'data/trinkets.json')).values()
     results = []
     for trinket in trinkets:
         if trinket['item_id'] == id:
@@ -44,7 +45,7 @@ def search(search_term, format):
     """
     Find a trinket via a search term (name, subtitle, some property)
     """
-    trinkets = json.loads(resource_string(__name__, 'data/trinkets.json'))
+    trinkets = json.loads(resource_string(__name__, 'data/trinkets.json')).values()
     results = []
     st = search_term.lower()
     def has_search_term(trinket, search_term):
@@ -63,4 +64,4 @@ def search(search_term, format):
     if results:
         formatters[format](results)
     else:
-        print("Could not find an item for the search term {}".format(search_term))
+        print("Could not find a trinket for the search term {}".format(search_term))

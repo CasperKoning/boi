@@ -17,7 +17,7 @@ def all(format):
     """
     Lists all items
     """
-    items = json.loads(resource_string(__name__, 'data/items.json'))
+    items = json.loads(resource_string(__name__, 'data/items.json')).values()
     formatters[format](items)
 
 @item.command()
@@ -27,7 +27,7 @@ def id(id, format):
     """
     Find an item by its ID and display its information
     """
-    items = json.loads(resource_string(__name__, 'data/items.json'))
+    items = json.loads(resource_string(__name__, 'data/items.json')).values()
     results = []
     for item in items:
         if item['item_id'] == id:
@@ -44,7 +44,7 @@ def search(search_term, format):
     """
     Find an item via a search term (name, subtitle, some property)
     """
-    items = json.loads(resource_string(__name__, 'data/items.json'))
+    items = json.loads(resource_string(__name__, 'data/items.json')).values()
     results = []
     st = search_term.lower()
     def has_search_term(item, search_term):

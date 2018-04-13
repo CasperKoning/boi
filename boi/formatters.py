@@ -60,7 +60,7 @@ def page(items):
 
     def put_description_text(buffer, header_height, description_width, description_lines):
         for index, line in enumerate(description_lines):
-            buffer.put_line((2, header_height + (2 * index)), line)
+            buffer.put_line((2, header_height + index), line)
 
     def put_description_image(buffer, header_height, description_width, image_width, image_height, image_path):
         buffer.put_image(image_path, (image_width, image_height), (description_width + 5, header_height + 1), (255, 255, 255))
@@ -76,8 +76,12 @@ def page(items):
         item_types = "Type: {}".format(", ".join(item["item_types"]))
         item_pools = "Pools: {}".format(", ".join(item["item_pools"]))
 
+        description_parts = item["description_parts"]
+        description_parts = [val for pair in zip(description_parts, ["\n"] * len(description_parts)) for val in pair] # interleave lines with newlines
+        description_parts = description_parts[:-1] # drop last newline
+
         description_lines = []
-        for description_part in item["description_parts"]:
+        for description_part in description_parts:
             description_lines = description_lines + textwrap.fill(description_part, description_width).split("\n")
 
         image_path = os.path.join(os.path.split(__file__)[0], 'data/images/{}'.format(item['image_path']))
@@ -90,9 +94,9 @@ def page(items):
             1, # bottom line
         ])
 
-        description_height = len(description_lines) * 2
-
-        height = header_height + max(description_height, ceil(image_height // 2)) + 1 + 2 # height // 2 because we draw two pixels in the vertical direction with one box character
+        description_height = len(description_lines)
+        
+        height = header_height + max(description_height, ceil((image_height // 2) + 1)) + 2 # height // 2 because we draw two pixels in the vertical direction with one box character
     
         buffer = Buffer(width, height)
 

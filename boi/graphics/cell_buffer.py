@@ -20,7 +20,7 @@ class Buffer(object):
     def __init__(self, width=80, height=16):
         self.width = width
         self.height = height
-        self.buffer = [[Cell(" ", -1, -1) for x in range(width)] for y in range(height)]
+        self.buffer = [[Cell(" ", 15, -1) for x in range(width)] for y in range(height)]
 
     def put_cell(self, position, character, fg=15, bg=-1):
         x, y = position

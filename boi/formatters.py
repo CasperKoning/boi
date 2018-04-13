@@ -29,47 +29,14 @@ def simple(items):
 
 
 def page(items):
-    def put_outline(buffer, width, height, header_height):
-        horizontal_line = u"\u2501" * (width - 2)
-
-        buffer.put_cell((0, 0), u"\u250F")
-        buffer.put_line((1, 0), horizontal_line)
-        buffer.put_cell((width - 1, 0), u"\u2513")
-
-        for i in range(1, header_height):
-            buffer.put_cell((0, i), u"\u2503")
-            buffer.put_cell((width - 1, i), u"\u2503")
-        
-        buffer.put_cell((0, header_height - 1), u"\u2523")
-        buffer.put_cell((width - 1, header_height - 1), u"\u252B")
-        buffer.put_line((1, header_height - 1), horizontal_line)
-
-        for i in range(header_height, height - 1):
-            buffer.put_cell((0, i), u"\u2503")
-            buffer.put_cell((width - 1, i), u"\u2503")
-
-        buffer.put_cell((0, height - 1), u"\u2517")
-        buffer.put_cell((width - 1, height - 1), u"\u251B")
-        buffer.put_line((1, height - 1), horizontal_line)
-
-    def put_header_content(buffer, title, subtitle, item_types, item_pools):
-        buffer.put_line((2, 2), title)
-        buffer.put_line((2, 4), subtitle)
-        buffer.put_line((30, 2), item_types)
-        buffer.put_line((30, 4), item_pools)
-
-    def put_description_text(buffer, header_height, description_width, description_lines):
-        for index, line in enumerate(description_lines):
-            buffer.put_line((2, header_height + index), line)
-
-    def put_description_image(buffer, header_height, description_width, image_width, image_height, image_path):
-        buffer.put_image(image_path, (image_width, image_height), (description_width + 5, header_height + 1), (255, 255, 255))
-
     def show_page(item):
-        width = 100
-        description_width = 55
+        description_width = 52
         image_height = 26
         image_width = 26
+        horizontal_component_dist = 2
+        horizontal_outline_dist = 2
+        vertical_outline_dist = 1
+        width = 1 + horizontal_outline_dist + description_width + horizontal_component_dist + image_width + horizontal_outline_dist + 1
 
         title = item["title"]
         subtitle = '"{}"'.format(item["subtitle"])
@@ -88,22 +55,60 @@ def page(items):
 
         header_height = sum([
             1, # top line
-            2, # title
+            vertical_outline_dist,
+            1, # title
             1, # empty line
-            2, # subtile
+            1, # subtitle
+            vertical_outline_dist,
             1, # bottom line
         ])
 
         description_height = len(description_lines)
         
-        height = header_height + max(description_height, ceil((image_height // 2) + 1)) + 2 # height // 2 because we draw two pixels in the vertical direction with one box character
+        height = header_height + vertical_outline_dist + max(description_height, ceil(image_height // 2)) + vertical_outline_dist + 1 # height // 2 because we draw two pixels in the vertical direction with one box character
     
+        def put_outline(buffer):
+            horizontal_line = u"\u2501" * (width - 2)
+
+            buffer.put_cell((0, 0), u"\u250F")
+            buffer.put_line((1, 0), horizontal_line)
+            buffer.put_cell((width - 1, 0), u"\u2513")
+
+            for i in range(1, header_height):
+                buffer.put_cell((0, i), u"\u2503")
+                buffer.put_cell((width - 1, i), u"\u2503")
+        
+            buffer.put_cell((0, header_height - 1), u"\u2523")
+            buffer.put_cell((width - 1, header_height - 1), u"\u252B")
+            buffer.put_line((1, header_height - 1), horizontal_line)
+
+            for i in range(header_height, height - 1):
+                buffer.put_cell((0, i), u"\u2503")
+                buffer.put_cell((width - 1, i), u"\u2503")
+
+            buffer.put_cell((0, height - 1), u"\u2517")
+            buffer.put_cell((width - 1, height - 1), u"\u251B")
+            buffer.put_line((1, height - 1), horizontal_line)
+
+        def put_header_content(buffer, title, subtitle, item_types, item_pools):
+            buffer.put_line((1 + horizontal_outline_dist, 1 + vertical_outline_dist), title)
+            buffer.put_line((1 + horizontal_outline_dist, 1 + 2 + vertical_outline_dist), subtitle)
+            buffer.put_line((30, 1 + vertical_outline_dist), item_types)
+            buffer.put_line((30, 1 + 2 + vertical_outline_dist), item_pools)
+
+        def put_description_text(buffer, description_lines):
+            for index, line in enumerate(description_lines):
+                buffer.put_line((1 + horizontal_outline_dist, header_height + vertical_outline_dist + index), line)
+
+        def put_description_image(buffer, image_path):
+            buffer.put_image(image_path, (image_width, image_height), (1 + horizontal_outline_dist + description_width + horizontal_component_dist, header_height + vertical_outline_dist), (255, 255, 255))
+
         buffer = Buffer(width, height)
 
-        put_outline(buffer, width, height, header_height)
+        put_outline(buffer)
         put_header_content(buffer, title, subtitle, item_types, item_pools)
-        put_description_text(buffer, header_height, description_width, description_lines)
-        put_description_image(buffer, header_height, description_width, image_height, image_width, image_path)
+        put_description_text(buffer, description_lines)
+        put_description_image(buffer, image_path)
 
         buffer.display()
     

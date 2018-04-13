@@ -10,6 +10,8 @@ import collections
 
 from PIL import Image
 
+from math import ceil
+
 Cell = collections.namedtuple("Cell", "character fg bg")
 
 block_top = "▀"
@@ -34,19 +36,27 @@ class Buffer(object):
         for i, char in enumerate(line):
             self.put_cell((x+i, y), char, fg, bg)
 
-    def put_image(self, path, x0=0, y0=0, transparent_replacement=(255, 255, 255)):
-        image = Image.open(path).convert("RGBA")
-        background = Image.new("RGBA", image.size, transparent_replacement)
-        background.paste(image, (0,0, image.size[0], image.size[1]), image)
-        pixels = background.convert("RGB").load()
-        width, height = background.size
+    def put_image(self, path, image_dimensions, offset = (0,0), transparent_replacement=(255, 255, 255)):
+        def get_pixels(path, image_dimensions, transparent_replacement):
+            image = Image.open(path)
+            image.thumbnail(image_dimensions)
+            image = image.convert("RGBA")
+            background = Image.new("RGBA", image_dimensions, transparent_replacement)
+            centering_x_offset = max(0, (image_dimensions[0] - image.size[0]) // 2)
+            centering_y_offset = max(0, (image_dimensions[1] - image.size[1]) // 2)
+            background.paste(image, (centering_x_offset, centering_y_offset), image)
+            return background.convert("RGB").load()
 
-        for y in range(0, height - 1, 2):
+        x0, y0 = offset[0], offset[1]
+        width, height = image_dimensions[0], image_dimensions[1]
+        
+        pixels = get_pixels(path, image_dimensions, transparent_replacement)
+
+        for y in range(height - 1):
             for x in range(width):
-                if x + x0 < self.width and y + y0 < self.height * 2:
-                    color_top = rgb_to_xterm(pixels[x, y])
-                    color_bottom = rgb_to_xterm(pixels[x, y + 1])
-                    self.put_cell((x0 + x, (y0 + y) // 2), block_top, color_top, color_bottom)
+                color_top = rgb_to_xterm(pixels[x, y])
+                color_bottom = rgb_to_xterm(pixels[x, y + 1])
+                self.put_cell((x0 + x, y0 + y), block_top, color_top, color_bottom)
 
     def render(self):
         output = []

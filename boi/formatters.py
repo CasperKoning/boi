@@ -57,14 +57,18 @@ def page(items):
         buffer.put_line((30, 1), item_types)
         buffer.put_line((30, 3), item_pools)
 
-    def put_description_content(buffer, header_height, description_width, description_lines, image_path):
+    def put_description_text(buffer, header_height, description_width, description_lines):
         for index, line in enumerate(description_lines):
-            buffer.put_line((2, header_height + (2*index)), line)
-        buffer.put_image(image_path, description_width + 10, header_height + 10, (255, 255, 255))
+            buffer.put_line((2, header_height + (2 * index)), line)
+
+    def put_description_image(buffer, header_height, description_width, image_width, image_height, image_path):
+        buffer.put_image(image_path, (image_width, image_height), (description_width + 5, header_height + 1), (255, 255, 255))
 
     def show_page(item):
         width = 100
         description_width = 55
+        image_height = 26
+        image_width = 26
 
         title = item["title"]
         subtitle = '"{}"'.format(item["subtitle"])
@@ -76,7 +80,6 @@ def page(items):
             description_lines = description_lines + textwrap.fill(description_part, description_width).split("\n")
 
         image_path = os.path.join(os.path.split(__file__)[0], 'data/images/{}'.format(item['image_path']))
-        image_height = (Image.open(image_path).size[1] // 2 + 4)
 
         header_height = sum([
             1, # top line
@@ -87,13 +90,14 @@ def page(items):
 
         description_height = len(description_lines) * 2
 
-        height = 2 + header_height + max(description_height, image_height)
+        height = header_height + max(description_height, image_height) + 2
     
         buffer = Buffer(width, height)
 
         put_outline(buffer, width, height, header_height)
         put_header_content(buffer, title, subtitle, item_types, item_pools)
-        put_description_content(buffer, header_height, description_width, description_lines, image_path)
+        put_description_text(buffer, header_height, description_width, description_lines)
+        put_description_image(buffer, header_height, description_width, image_height, image_width, image_path)
 
         buffer.display()
     

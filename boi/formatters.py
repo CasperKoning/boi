@@ -53,10 +53,10 @@ def page(items):
         buffer.put_line((1, height - 1), horizontal_line)
 
     def put_header_content(buffer, title, subtitle, item_types, item_pools):
-        buffer.put_line((2, 1), title)
-        buffer.put_line((2, 3), subtitle)
-        buffer.put_line((30, 1), item_types)
-        buffer.put_line((30, 3), item_pools)
+        buffer.put_line((2, 2), title)
+        buffer.put_line((2, 4), subtitle)
+        buffer.put_line((30, 2), item_types)
+        buffer.put_line((30, 4), item_pools)
 
     def put_description_text(buffer, header_height, description_width, description_lines):
         for index, line in enumerate(description_lines):
@@ -85,6 +85,7 @@ def page(items):
         header_height = sum([
             1, # top line
             2, # title
+            1, # empty line
             2, # subtile
             1, # bottom line
         ])

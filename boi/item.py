@@ -22,7 +22,7 @@ def all(format):
 
 @item.command()
 @click.argument("id")
-@click.option("-f", "--format", metavar="FORMAT", default="simple", type=click.Choice(formatter_names), help="Output format (can be %s)." % ", ".join(formatter_names))
+@click.option("-f", "--format", metavar="FORMAT", default="page", type=click.Choice(formatter_names), help="Output format (can be %s)." % ", ".join(formatter_names))
 def id(id, format):
     """
     Find an item by its ID and display its information
@@ -39,7 +39,7 @@ def id(id, format):
 
 @item.command()
 @click.argument("search_term")
-@click.option("-f", "--format", metavar="FORMAT", default="simple", type=click.Choice(formatter_names), help="Output format (can be %s)." % ", ".join(formatter_names))
+@click.option("-f", "--format", metavar="FORMAT", default="page", type=click.Choice(formatter_names), help="Output format (can be %s)." % ", ".join(formatter_names))
 def search(search_term, format):
     """
     Find an item via a search term (name, subtitle, some property)

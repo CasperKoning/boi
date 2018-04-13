@@ -52,11 +52,11 @@ class Buffer(object):
         
         pixels = get_pixels(path, image_dimensions, transparent_replacement)
 
-        for y in range(height - 1):
+        for y in range(0, height, 2):
             for x in range(width):
                 color_top = rgb_to_xterm(pixels[x, y])
                 color_bottom = rgb_to_xterm(pixels[x, y + 1])
-                self.put_cell((x0 + x, y0 + y), block_top, color_top, color_bottom)
+                self.put_cell((x0 + x, y0 + y // 2), block_top, color_top, color_bottom)
 
     def render(self):
         output = []

@@ -5,6 +5,7 @@ from .graphics.cell_buffer import Buffer
 from .item_selector import select_item
 import os
 import textwrap
+from math import ceil
 
 from PIL import Image
 
@@ -90,7 +91,7 @@ def page(items):
 
         description_height = len(description_lines) * 2
 
-        height = header_height + max(description_height, image_height) + 2
+        height = header_height + max(description_height, ceil(image_height // 2)) + 1 + 2 # height // 2 because we draw two pixels in the vertical direction with one box character
     
         buffer = Buffer(width, height)
 
